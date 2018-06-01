@@ -87,7 +87,8 @@ func createTransaction(svc *dynamodb.DynamoDB) {
 	fmt.Println("Created Transaction")
 }
 
-// UploadedFileTable for uploaded data
+// UploadedFileTable for uploaded data. CMD to enable ttl
+// aws dynamodb update-time-to-live --table-name UploadedFile --time-to-live-specification "Enabled=true, AttributeName=deadline"
 const UploadedFileTable = "UploadedFile"
 
 func createUploadedFile(svc *dynamodb.DynamoDB) {
@@ -97,6 +98,10 @@ func createUploadedFile(svc *dynamodb.DynamoDB) {
 			{
 				AttributeName: aws.String("json"),
 				AttributeType: aws.String("S"),
+			},
+			{
+				AttributeName: aws.String("deadline"),
+				AttributeType: aws.String("N"),
 			},
 		},
 		KeySchema: []*dynamodb.KeySchemaElement{
