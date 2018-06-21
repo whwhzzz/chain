@@ -17,7 +17,9 @@ func Index(w http.ResponseWriter, r *http.Request) {
 /*
 Test with this curl command:
 
-curl -H "Content-Type: application/json" -d '{"offer_id":"test"}' http://localhost:8081/upload
+curl -H "Content-Type: application/json" -d \
+'{"buyer_cert":"","seller_sig":"","seller_cert":"","offer_id":"test_offer","time_expire":0,"payload":"","content":"test"}' \
+http://localhost:8081/upload
 
 */
 func UploadRequestHandler(w http.ResponseWriter, r *http.Request) {
@@ -38,7 +40,7 @@ func UploadRequestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(request.Content) > 0 {
-		storage.AddPayload(ConnectDB(), request.OfferID, request.Content)
+		storage.AddPayload(storage.ConnectDB(), request.OfferID, request.Content)
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")

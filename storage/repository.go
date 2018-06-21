@@ -6,13 +6,14 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
 type Item struct {
 	OfferId  string `json:"offer_id"`
-	Content  string `json:"json"`
+	Content  string `json:"content"`
 	DeadLine int64  `json:"dead_line"`
 }
 
@@ -34,7 +35,7 @@ func AddPayload(svc *dynamodb.DynamoDB, offer_id string, content string) {
 	if err != nil {
 		fmt.Println("Got error calling PutItem:")
 		fmt.Println(err.Error())
-		os.Exit(1)
+		return
 	}
 
 	fmt.Println("Successfully added")
@@ -68,9 +69,9 @@ func UpdatePayload(svc *dynamodb.DynamoDB, offer_id string, content string) {
 	fmt.Println("Successfully updated")
 }
 
-func ConnectDB() svc *dynamodb.DynamoDB {
-	sess, _ := session.NewSession(&aws.Config{
-		Region: aws.String("us-west-2")},
+func ConnectDB() (svc *dynamodb.DynamoDB) {
+	sess, err := session.NewSession(&aws.Config{
+		Region: aws.String("us-east-2")},
 	)
 
 	if err != nil {
@@ -80,5 +81,6 @@ func ConnectDB() svc *dynamodb.DynamoDB {
 	}
 
 	// Create DynamoDB client
-	svc := dynamodb.New(sess)
+	svc = dynamodb.New(sess)
+	return
 }
