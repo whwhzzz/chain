@@ -14,4 +14,5 @@ type DownloadRequest struct {
 	BuyerCert  string `json:"buyer_cert"`
 	OfferID    string `json:"offer_id"`
 	UseDeposit bool   `json:"use_deposit"`
+	Payload    string `json:"payload"`
 }

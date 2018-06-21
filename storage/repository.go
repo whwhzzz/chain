@@ -11,6 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
 )
 
+var dynamo_con *dynamodb.DynamoDB
+
 type Item struct {
 	OfferId  string `json:"offer_id"`
 	Content  string `json:"content"`
@@ -69,7 +71,39 @@ func UpdatePayload(svc *dynamodb.DynamoDB, offer_id string, content string) {
 	fmt.Println("Successfully updated")
 }
 
+func FetchPayload(svc *dynamodb.DynamoDB, offer_id string) (content string) {
+	result, err := svc.GetItem(&dynamodb.GetItemInput{
+		TableName: aws.String(UploadedFileTable),
+		Key: map[string]*dynamodb.AttributeValue{
+			"offer_id": {
+				S: aws.String(offer_id),
+			},
+		},
+	})
+
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	item := Item{}
+
+	err = dynamodbattribute.UnmarshalMap(result.Item, &item)
+
+	if err != nil {
+		panic(fmt.Sprintf("Failed to unmarshal Record, %v", err))
+	}
+
+	content = item.Content
+	fmt.Println("Successfully fetch offer " + offer_id)
+	return
+}
+
 func ConnectDB() (svc *dynamodb.DynamoDB) {
+	if dynamo_con != nil {
+		svc = dynamo_con
+		return
+	}
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String("us-east-2")},
 	)

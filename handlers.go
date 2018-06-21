@@ -50,8 +50,16 @@ func UploadRequestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+/*
+Test with this curl command:
+
+curl -H "Content-Type: application/json" -d \
+'{"offer_id":"test_offer"}' \
+http://localhost:8081/download
+
+*/
 func DownloadRequestHandler(w http.ResponseWriter, r *http.Request) {
-	var todo DownloadRequest
+	var request DownloadRequest
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
 		panic(err)
@@ -59,7 +67,7 @@ func DownloadRequestHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.Body.Close(); err != nil {
 		panic(err)
 	}
-	if err := json.Unmarshal(body, &todo); err != nil {
+	if err := json.Unmarshal(body, &request); err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
 		if err := json.NewEncoder(w).Encode(err); err != nil {
@@ -67,9 +75,13 @@ func DownloadRequestHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if len(request.OfferID) > 0 {
+		request.Payload = storage.FetchPayload(storage.ConnectDB(), request.OfferID)
+	}
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(todo); err != nil {
+	if err := json.NewEncoder(w).Encode(request); err != nil {
 		panic(err)
 	}
 }
