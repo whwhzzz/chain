@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/Workiva/go-datastructures/threadsafe/err"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
@@ -128,6 +129,12 @@ func main() {
 	sess, _ := session.NewSession(&aws.Config{
 		Region: aws.String("us-west-2")},
 	)
+
+	if err != nil {
+		fmt.Println("Error creating session:")
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
 
 	// Create DynamoDB client
 	svc := dynamodb.New(sess)

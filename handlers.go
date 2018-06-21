@@ -6,6 +6,8 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/wanghan/dropbox/storage"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +21,7 @@ curl -H "Content-Type: application/json" -d '{"offer_id":"test"}' http://localho
 
 */
 func UploadRequestHandler(w http.ResponseWriter, r *http.Request) {
-	var todo UploadRequest
+	var request UploadRequest
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
 		panic(err)
@@ -27,7 +29,7 @@ func UploadRequestHandler(w http.ResponseWriter, r *http.Request) {
 	if err := r.Body.Close(); err != nil {
 		panic(err)
 	}
-	if err := json.Unmarshal(body, &todo); err != nil {
+	if err := json.Unmarshal(body, &request); err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
 		if err := json.NewEncoder(w).Encode(err); err != nil {
@@ -35,9 +37,13 @@ func UploadRequestHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	if len(request.Content) > 0 {
+		storage.AddPayload(ConnectDB(), request.OfferID, request.Content)
+	}
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(todo); err != nil {
+	if err := json.NewEncoder(w).Encode(request); err != nil {
 		panic(err)
 	}
 }

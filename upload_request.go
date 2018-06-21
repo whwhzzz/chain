@@ -7,6 +7,7 @@ type UploadRequest struct {
 	OfferID    string `json:"offer_id"`
 	TimeExpire int64  `json:"time_expire"`
 	Payload    string `json:"payload"`
+	Content    string `json:"content"`
 }
 
 type DownloadRequest struct {

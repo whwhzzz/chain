@@ -6,7 +6,7 @@ ADD . /go/src/github.com/points-org/dropbox
 
 RUN go get -v github.com/points-org/dropbox
 
-RUN go install github.com/wanghan/dropbox
+RUN go install github.com/points-org/dropbox
 
 ENTRYPOINT /go/bin/dropbox
 

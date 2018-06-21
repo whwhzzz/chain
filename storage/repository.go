@@ -67,3 +67,18 @@ func UpdatePayload(svc *dynamodb.DynamoDB, offer_id string, content string) {
 
 	fmt.Println("Successfully updated")
 }
+
+func ConnectDB() svc *dynamodb.DynamoDB {
+	sess, _ := session.NewSession(&aws.Config{
+		Region: aws.String("us-west-2")},
+	)
+
+	if err != nil {
+		fmt.Println("Error creating session:")
+		fmt.Println(err.Error())
+		os.Exit(1)
+	}
+
+	// Create DynamoDB client
+	svc := dynamodb.New(sess)
+}

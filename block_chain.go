@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 
@@ -37,3 +38,4 @@ func CheckTheOfferID(rpc *ont_rpc.RpcClient, res map[string]common.Uint256) {
 		}
 	}
 }
+*/
